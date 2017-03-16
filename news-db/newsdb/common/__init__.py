@@ -53,5 +53,4 @@ def crossdomain(fk=None, app=None, origin=None, methods=None, headers=None, max_
         return update_wrapper(wrapped_function, f)
     return decorator
 
-from .managers import *
 from .core import *
