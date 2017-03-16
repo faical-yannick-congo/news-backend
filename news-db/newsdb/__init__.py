@@ -1,7 +1,7 @@
 """Python module, `newsdb`, for News Backend.
 """
 import os
-import corrdb.common
+import newsdb.common
 
 def get_version():
     """Get the version of the code from egg_info.
