@@ -4,7 +4,7 @@
 --port=<port>   set the port number or leave it to 5100.
 
 """
-from api import app
+from news import app
 if __name__ == '__main__':
     from docopt import docopt
     arguments = docopt(__doc__, version='0.1dev')
