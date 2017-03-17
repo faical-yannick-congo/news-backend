@@ -17,7 +17,7 @@ from io import StringIO
 import hashlib
 
 @app.route(SERVICE_URL + '/news/add', methods=['GET','POST','PUT','UPDATE','DELETE'])
-@crossdomain(origin='*')
+@crossdomain(fk=fk, app=app, origin='*')
 def add_news():
     if fk.request.method == 'POST':
         if fk.request.data:
@@ -47,7 +47,7 @@ def add_news():
         return service_response(405, 'Method not allowed', 'This endpoint supports only a POST method.')
 
 @app.route(SERVICE_URL + '/news/edit/<news_id>', methods=['GET','POST','PUT','UPDATE','DELETE'])
-@crossdomain(origin='*')
+@crossdomain(fk=fk, app=app, origin='*')
 def edit_news(news_id):
     if fk.request.method == 'GET':
         _news = News.objects.with_id(news_id)
@@ -90,7 +90,7 @@ def edit_news(news_id):
 ## Later on edit it to pulled when message done sent.
 
 @app.route(SERVICE_URL + '/news/pushing/<country>', methods=['GET','POST','PUT','UPDATE','DELETE'])
-@crossdomain(origin='*')
+@crossdomain(fk=fk, app=app, origin='*')
 def news_pushing_country(country):
     if fk.request.method == 'GET':
         day = str(datetime.date.today().isoformat())
@@ -108,7 +108,7 @@ def news_pushing_country(country):
         return service_response(405, 'Method not allowed', 'This endpoint supports only a GET method.')
 
 @app.route(SERVICE_URL + '/news/pushed/<news_id>', methods=['GET','POST','PUT','UPDATE','DELETE'])
-@crossdomain(origin='*')
+@crossdomain(fk=fk, app=app, origin='*')
 def pushed_news(news_id):
     if fk.request.method == 'GET':
         _news = News.objects.with_id(news_id)
@@ -122,7 +122,7 @@ def pushed_news(news_id):
         return service_response(405, 'Method not allowed', 'This endpoint supports only a GET method.')
 
 @app.route(SERVICE_URL + '/news/country/<country>/<schedule>', methods=['GET','POST','PUT','UPDATE','DELETE'])
-@crossdomain(origin='*')
+@crossdomain(fk=fk, app=app, origin='*')
 def news_by_country(country, schedule):
     if fk.request.method == 'GET':
 
@@ -148,7 +148,7 @@ def news_by_country(country, schedule):
         return service_response(405, 'Method not allowed', 'This endpoint supports only a GET method.')
 
 @app.route(SERVICE_URL + '/news/today/<country>/<schedule>', methods=['GET','POST','PUT','UPDATE','DELETE'])
-@crossdomain(origin='*')
+@crossdomain(fk=fk, app=app, origin='*')
 def news_today_country(country, schedule):
     if fk.request.method == 'GET':
         day = str(datetime.date.today().isoformat())
@@ -174,7 +174,7 @@ def news_today_country(country, schedule):
         return service_response(405, 'Method not allowed', 'This endpoint supports only a GET method.')
 
 @app.route(SERVICE_URL + '/news/delete/<country>/<news_id>', methods=['GET','POST','PUT','UPDATE','DELETE'])
-@crossdomain(origin='*')
+@crossdomain(fk=fk, app=app, origin='*')
 def delete_news(country, news_id):
     if fk.request.method == 'GET':
         for _new in News.objects():

@@ -33,7 +33,6 @@ def crossdomain(fk=None, app=None, origin=None, methods=None, headers=None, max_
 
     def decorator(f):
         def wrapped_function(*args, **kwargs):
-            import flask as fk
             if automatic_options and fk.request.method == 'OPTIONS':
                 resp = app.make_default_options_response()
             else:

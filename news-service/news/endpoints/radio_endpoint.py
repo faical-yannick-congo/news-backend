@@ -17,7 +17,7 @@ from io import StringIO
 import hashlib
 
 @app.route(SERVICE_URL + '/radio/add', methods=['GET','POST','PUT','UPDATE','DELETE'])
-@crossdomain(origin='*')
+@crossdomain(fk=fk, app=app, origin='*')
 def add_radio():
     if fk.request.method == 'POST':
         if fk.request.data:
@@ -46,7 +46,7 @@ def add_radio():
         return service_response(405, 'Method not allowed', 'This endpoint supports only a POST method.')
 
 @app.route(SERVICE_URL + '/radio/edit/<radio_id>', methods=['GET','POST','PUT','UPDATE','DELETE'])
-@crossdomain(origin='*')
+@crossdomain(fk=fk, app=app, origin='*')
 def edit_radio(radio_id):
     if fk.request.method == 'GET':
         _radio = Radio.objects.with_id(radio_id)
@@ -76,7 +76,7 @@ def edit_radio(radio_id):
         return service_response(405, 'Method not allowed', 'This endpoint supports only a GET method.')
 
 @app.route(SERVICE_URL + '/radios/country/<country>', methods=['GET','POST','PUT','UPDATE','DELETE'])
-@crossdomain(origin='*')
+@crossdomain(fk=fk, app=app, origin='*')
 def radios_by_country(country):
     if fk.request.method == 'GET':
         if country == 'all':
@@ -88,7 +88,7 @@ def radios_by_country(country):
         return service_response(405, 'Method not allowed', 'This endpoint supports only a GET method.')
 
 @app.route(SERVICE_URL + '/radio/delete/<radio_id>', methods=['GET','POST','PUT','UPDATE','DELETE'])
-@crossdomain(origin='*')
+@crossdomain(fk=fk, app=app, origin='*')
 def delete_radio(radio_id):
     if fk.request.method == 'GET':
         _radio = Radio.objects.with_id(radio_id)

@@ -19,7 +19,7 @@ from io import StringIO
 import hashlib
 
 @app.route(SERVICE_URL + '/cover/add', methods=['GET','POST','PUT','UPDATE','DELETE'])
-@crossdomain(origin='*')
+@crossdomain(fk=fk, app=app, origin='*')
 def add_cover():
     if fk.request.method == 'POST':
         if fk.request.data:
@@ -52,7 +52,7 @@ def add_cover():
         return service_response(405, 'Method not allowed', 'This endpoint supports only a POST method.')
 
 @app.route(SERVICE_URL + '/cover/edit/<cover_id>', methods=['GET','POST','PUT','UPDATE','DELETE'])
-@crossdomain(origin='*')
+@crossdomain(fk=fk, app=app, origin='*')
 def edit_cover(cover_id):
     if fk.request.method == 'GET':
         _cover = Coverage.objects.with_id(cover_id)
@@ -88,7 +88,7 @@ def edit_cover(cover_id):
         return service_response(405, 'Method not allowed', 'This endpoint supports only a GET method.')
 
 @app.route(SERVICE_URL + '/covers/country/<country>', methods=['GET','POST','PUT','UPDATE','DELETE'])
-@crossdomain(origin='*')
+@crossdomain(fk=fk, app=app, origin='*')
 def covers_by_country(country):
     if fk.request.method == 'GET':
         if country == 'all':
@@ -100,7 +100,7 @@ def covers_by_country(country):
         return service_response(405, 'Method not allowed', 'This endpoint supports only a GET method.')
 
 @app.route(SERVICE_URL + '/cover/delete/<cover_id>', methods=['GET','POST','PUT','UPDATE','DELETE'])
-@crossdomain(origin='*')
+@crossdomain(fk=fk, app=app, origin='*')
 def delete_cover(cover_id):
     if fk.request.method == 'GET':
         _cover = Coverage.objects.with_id(cover_id)
@@ -113,7 +113,7 @@ def delete_cover(cover_id):
         return service_response(405, 'Method not allowed', 'This endpoint supports only a GET method.')
 
 @app.route(SERVICE_URL + '/cover/sync/<country>', methods=['GET','POST','PUT','UPDATE','DELETE'])
-@crossdomain(origin='*')
+@crossdomain(fk=fk, app=app, origin='*')
 def sync_cover(country):
     if fk.request.method == 'GET':
         _covers = Coverage.objects(country=country)
@@ -191,7 +191,7 @@ def sync_cover(country):
         return service_response(405, 'Method not allowed', 'This endpoint supports only a GET method.')
 
 @app.route(SERVICE_URL + '/cover/schedule/add/<cover_id>/<schedule>', methods=['GET','POST','PUT','UPDATE','DELETE'])
-@crossdomain(origin='*')
+@crossdomain(fk=fk, app=app, origin='*')
 def add_schedule_cover(cover_id, schedule):
     if fk.request.method == 'GET':
         _cover = Coverage.objects.with_id(cover_id)
@@ -220,7 +220,7 @@ def add_schedule_cover(cover_id, schedule):
         return service_response(405, 'Method not allowed', 'This endpoint supports only a GET method.')
 
 @app.route(SERVICE_URL + '/cover/schedule/delete/<cover_id>/<schedule>', methods=['GET','POST','PUT','UPDATE','DELETE'])
-@crossdomain(origin='*')
+@crossdomain(fk=fk, app=app, origin='*')
 def delete_schedule_cover(cover_id, schedule):
     if fk.request.method == 'GET':
         _cover = Coverage.objects.with_id(cover_id)
@@ -240,7 +240,7 @@ def delete_schedule_cover(cover_id, schedule):
         return service_response(405, 'Method not allowed', 'This endpoint supports only a GET method.')
 
 @app.route(SERVICE_URL + '/cover/schedule/reset/<cover_id>/<schedule>', methods=['GET','POST','PUT','UPDATE','DELETE'])
-@crossdomain(origin='*')
+@crossdomain(fk=fk, app=app, origin='*')
 def reset_schedule_cover(cover_id, schedule):
     if fk.request.method == 'GET':
         _cover = Coverage.objects.with_id(cover_id)
@@ -259,7 +259,7 @@ def reset_schedule_cover(cover_id, schedule):
         return service_response(405, 'Method not allowed', 'This endpoint supports only a GET method.')
 
 @app.route(SERVICE_URL + '/cover/schedule/show/<cover_id>', methods=['GET','POST','PUT','UPDATE','DELETE'])
-@crossdomain(origin='*')
+@crossdomain(fk=fk, app=app, origin='*')
 def show_schedule_cover(cover_id):
     if fk.request.method == 'GET':
         _cover = Coverage.objects.with_id(cover_id)
