@@ -13,7 +13,7 @@ import traceback
 import datetime
 import random
 import string
-from StringIO import StringIO
+from io import StringIO
 import hashlib
 
 @app.route(SERVICE_URL + '/news/add', methods=['GET','POST','PUT','UPDATE','DELETE'])
