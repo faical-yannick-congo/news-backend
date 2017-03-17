@@ -14,7 +14,7 @@ if __name__ == '__main__':
     debug = not arguments['--no-debug']
 
 
-    if not port: port = 5100
+    if not port: port = 5200
     if not host: host = '0.0.0.0'
 
     app.run(debug=debug, host=host, port=int(port))

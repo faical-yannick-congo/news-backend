@@ -26,7 +26,7 @@ app = setup_app(__name__)
 # The sms news service's version
 SERVICE_VERSION = 0.1
 # The sms news service base url
-SERVICE_URL = '/sms/servies/news/v{0}'.format(SERVICE_VERSION)
+SERVICE_URL = '/sms/services/news/v{0}'.format(SERVICE_VERSION)
 
 
 def service_response(code, title, content):
