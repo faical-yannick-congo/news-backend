@@ -1,4 +1,4 @@
-from crawlerPackage1 import *
+from .crawlerPackage1 import *
 
 class CoreCawler():
     def __init__(self):
@@ -41,4 +41,3 @@ class CoreCawler():
         #     print n
         #     print "<- news ->"
         return news
-
