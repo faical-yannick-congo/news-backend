@@ -135,7 +135,7 @@ def sync_cover(country):
                     hour_sch = 24 + hour_sch
                 elif hour_sch > 24:
                     hour_sch = hour_sch - 24
-                print "%d:00"%hour_sch
+                print("%d:00".format(hour_sch))
                 data['country-time'] = "%d:%s"%(hour_sch, hour.split(':')[1])
                 data['radios'] = {}
                 try:
