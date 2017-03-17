@@ -6,7 +6,7 @@ import flask as fk
 from newsdb.common import crossdomain
 from news import app, SERVICE_URL, service_response
 from newsdb.common.models import Radio, Coverage, News
-from news.crawlers import CoreCawler
+from ..crawlers import CoreCawler
 from time import gmtime, strftime
 
 import mimetypes
