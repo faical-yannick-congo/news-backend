@@ -9,6 +9,7 @@ import datetime
 from datetime import date, timedelta
 from calendar import monthrange
 from functools import update_wrapper
+import flask as fk
 
 def crossdomain(fk=None, app=None, origin=None, methods=None, headers=None, max_age=21600, attach_to_all=True, automatic_options=True):
     """Allow crossdomain calls from other domains and port.
