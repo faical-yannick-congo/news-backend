@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Setup for the corrdb module of CoRR.
+"""Setup for the newsdb module of SMS News Service.
 """
 import subprocess
 from setuptools import setup, find_packages
