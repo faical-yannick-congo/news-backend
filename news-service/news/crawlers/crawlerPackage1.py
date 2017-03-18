@@ -24,8 +24,8 @@ def fetchCNNCSS_USA(url):
     page = requests.get(url)
     soup = bs4.BeautifulSoup(page.text, 'html.parser')
     interests = []
-    # for desc in soup.find_all('description'):
-    for desc in soup.find_all('title'):
+    for desc in soup.find_all('description'):
+    # for desc in soup.find_all('title'):
         desc_content = desc.string.split('&lt;div')[0].split('<div')[0]
         if desc_content != "":
             interests.append(shortenNews160(desc_content))
@@ -162,8 +162,8 @@ def fetchNYCTimes_USA(url):
     page = requests.get(url)
     soup = bs4.BeautifulSoup(page.text, 'html.parser')
     interests = []
-    # for desc in soup.find_all('description'):
-    for desc in soup.find_all('title'):
+    for desc in soup.find_all('description'):
+    # for desc in soup.find_all('title'):
         desc_content = desc.string
         interests.append(shortenNews160(desc_content))
     return interests
@@ -172,8 +172,8 @@ def fetchF24CSS_En(url):
     page = requests.get(url)
     soup = bs4.BeautifulSoup(page.text, 'html.parser')
     interests = []
-    # for desc in soup.find_all('description'):
-    for desc in soup.find_all('title'):
+    for desc in soup.find_all('description'):
+    # for desc in soup.find_all('title'):
         if desc.string != None:
             try:
                 desc_content = desc.string.split("</p>")[0].split("<p>")[1]
