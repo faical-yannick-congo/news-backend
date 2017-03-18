@@ -1,6 +1,12 @@
 import bs4
 import requests
 
+def shortenNews160(message):
+    if len(message) > 0:
+        return "%s...".format(message[:157])
+    else:
+        return message
+
 def fetchCNN_USA(url):
     page = requests.get(url)
     soup = bs4.BeautifulSoup(page.text, 'html.parser')
@@ -11,24 +17,25 @@ def fetchCNN_USA(url):
                 if "\"headline\":" in sp1:
                     news_1 = sp1.split("\"headline\":\"")[1]
                     if news_1 != "":
-                        interests.append(news_1)
+                        interests.append(shortenNews160(news_1))
     return interests
 
 def fetchCNNCSS_USA(url):
     page = requests.get(url)
     soup = bs4.BeautifulSoup(page.text, 'html.parser')
     interests = []
-    for desc in soup.find_all('description'):
+    # for desc in soup.find_all('description'):
+    for desc in soup.find_all('title'):
         desc_content = desc.string.split('&lt;div')[0].split('<div')[0]
         if desc_content != "":
-            interests.append(desc_content)
+            interests.append(shortenNews160(desc_content))
     return interests
 
 def fetchRTB_BFA(url):
     page = requests.get(url)
     soup = bs4.BeautifulSoup(page.text, 'html.parser')
     content = soup.find_all("a", rel="bookmark")
-    interests = [n['title'] for n in content]
+    interests = [shortenNews160(n['title']) for n in content]
     return interests
 
 def fetchOMEGA_BFA(url):
@@ -41,7 +48,7 @@ def fetchOMEGA_BFA(url):
             a_content = li.find("a")
             if a_content:
                 if a_content.string != "" and a_content.string and ':' in a_content.string:
-                    interests.append(a_content.string)
+                    interests.append(shortenNews160(a_content.string))
     return interests
 
 def fetchRFI_FRANCE(url):
@@ -51,7 +58,7 @@ def fetchRFI_FRANCE(url):
     interests = []
     for n in content:
         if n != "None" and n != "" and n != "\n":
-            interests.append(n.string)
+            interests.append(shortenNews160(n.string))
     return interests[:-2]
 
 def fetchF24_FRANCE(url):
@@ -61,7 +68,7 @@ def fetchF24_FRANCE(url):
     interests = []
     for n in content:
         if n != "None" and n != "" and n != "\n":
-            interests.append(n.string)
+            interests.append(shortenNews160(n.string))
     return interests
 
 def fetchAF24_AFRIQUE(url):
@@ -80,7 +87,7 @@ def fetchAF24_AFRIQUE(url):
             for li in ul.find_all("li"):
                 a_content = li.string
                 if a_content != "" and a_content and '-' in a_content:
-                    interests.append(a_content)
+                    interests.append(shortenNews160(a_content))
     return interests
 
 def fetch2MFr_MA(url):
@@ -100,7 +107,7 @@ def fetch2MFr_MA(url):
         if select and "/fr/news" in a['href']:
             a_content = a['title']
             if a_content != "":
-                interests.append(a_content)
+                interests.append(shortenNews160(a_content))
     return interests
 
 def fetch2MAr_MA(url):
@@ -120,7 +127,7 @@ def fetch2MAr_MA(url):
         if select and "/ar/news" in a['href']:
             a_content = a['title']
             if a_content != "":
-                interests.append(a_content)
+                interests.append(shortenNews160(a_content))
     return interests[:-1]
 
 def fetchBFM_FRANCE(url):
@@ -130,7 +137,7 @@ def fetchBFM_FRANCE(url):
     interests = []
     for n in content:
         if n != "None" and n != "" and n != "\n":
-            interests.append(n.string)
+            interests.append(shortenNews160(n.string))
     return interests
 
 def fetchArte_FRANCE(url):
@@ -148,28 +155,30 @@ def fetchArte_FRANCE(url):
 
         if select and "node-title" in h3['class']:
             if h3.a.string != "":
-                interests.append(h3.a.string)
+                interests.append(shortenNews160(h3.a.string))
     return interests[:-1]
 
 def fetchNYCTimes_USA(url):
     page = requests.get(url)
     soup = bs4.BeautifulSoup(page.text, 'html.parser')
     interests = []
-    for desc in soup.find_all('description'):
+    # for desc in soup.find_all('description'):
+    for desc in soup.find_all('title'):
         desc_content = desc.string
-        interests.append(desc_content)
+        interests.append(shortenNews160(desc_content))
     return interests
 
 def fetchF24CSS_En(url):
     page = requests.get(url)
     soup = bs4.BeautifulSoup(page.text, 'html.parser')
     interests = []
-    for desc in soup.find_all('description'):
+    # for desc in soup.find_all('description'):
+    for desc in soup.find_all('title'):
         if desc.string != None:
             try:
                 desc_content = desc.string.split("</p>")[0].split("<p>")[1]
                 if desc_content != "":
-                    interests.append(desc_content)
+                    interests.append(shortenNews160(desc_content))
             except:
                 pass
 
