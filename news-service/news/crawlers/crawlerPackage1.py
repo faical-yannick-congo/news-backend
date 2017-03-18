@@ -22,7 +22,6 @@ def fetchCNNCSS_USA(url):
         desc_content = desc.string.split('&lt;div')[0].split('<div')[0]
         if desc_content != "":
             interests.append(desc_content)
-            print(desc_content)
     return interests
 
 def fetchRTB_BFA(url):
@@ -131,7 +130,6 @@ def fetchBFM_FRANCE(url):
     interests = []
     for n in content:
         if n != "None" and n != "" and n != "\n":
-            print(n.string)
             interests.append(n.string)
     return interests
 
@@ -150,7 +148,6 @@ def fetchArte_FRANCE(url):
 
         if select and "node-title" in h3['class']:
             if h3.a.string != "":
-                print(h3.a.string)
                 interests.append(h3.a.string)
     return interests[:-1]
 
@@ -161,7 +158,6 @@ def fetchNYCTimes_USA(url):
     for desc in soup.find_all('description'):
         desc_content = desc.string
         interests.append(desc_content)
-        print(desc_content)
     return interests
 
 def fetchF24CSS_En(url):
@@ -172,8 +168,6 @@ def fetchF24CSS_En(url):
         if desc.string != None:
             try:
                 desc_content = desc.string.split("</p>")[0].split("<p>")[1]
-                print(len(desc_content))
-                print(desc_content)
                 if desc_content != "":
                     interests.append(desc_content)
             except:
