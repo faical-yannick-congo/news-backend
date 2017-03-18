@@ -1,4 +1,4 @@
-import json
+import simplejson as json
 
 from flask.ext.api import status
 import flask as fk
@@ -8,7 +8,6 @@ from news import app, SERVICE_URL, service_response
 from newsdb.common.models import Radio, Coverage, News
 
 import mimetypes
-import json
 import traceback
 import datetime
 import random

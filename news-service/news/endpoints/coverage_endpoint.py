@@ -1,4 +1,4 @@
-import json
+import simplejson as json
 
 from flask.ext.api import status
 import flask as fk
@@ -10,7 +10,6 @@ from news.crawlers.coreCrawler import CoreCawler
 from time import gmtime, strftime
 
 import mimetypes
-import json
 import traceback
 import datetime
 import random
