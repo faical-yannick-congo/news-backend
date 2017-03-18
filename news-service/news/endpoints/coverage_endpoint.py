@@ -163,6 +163,7 @@ def sync_cover(country):
                     for radio in _cover.radios:
                         crawler = CoreCawler()
                         news = crawler.fetch(radio.url)
+                        print(news)
                         for new in news:
                             _new = News.objects(coverage=_cover, radio=radio, day=day, content=new, country=_cover.country).first()
                             if _new is None:
