@@ -2,8 +2,8 @@ import bs4
 import requests
 
 def shortenNews160(message):
-    if len(message) > 120:
-        return "{0}...".format(message[:117])
+    if len(str(message).encode('utf-8')) > 120:
+        return "{0}...".format(str(message).encode('uf-8')[:117])
     else:
         return message
 
