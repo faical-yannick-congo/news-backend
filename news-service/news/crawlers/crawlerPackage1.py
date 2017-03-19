@@ -2,8 +2,8 @@ import bs4
 import requests
 
 def shortenNews160(message):
-    if len(message) > 0:
-        return "{0}...".format(message[:157])
+    if len(message) > 120:
+        return "{0}...".format(message[:117])
     else:
         return message
 
