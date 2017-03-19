@@ -3,7 +3,7 @@ import requests
 
 def shortenNews160(message):
     if len(message) > 0:
-        return "%s...".format(message[:157])
+        return "{0}...".format(message[:157])
     else:
         return message
 
