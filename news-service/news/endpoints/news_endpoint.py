@@ -14,6 +14,14 @@ import random
 import string
 from io import StringIO
 import hashlib
+import phonenumbers
+from phonenumbers.phonenumberutil import region_code_for_country_code
+from phonenumbers.phonenumberutil import region_code_for_number
+import pycountry
+
+from geopy import geocoders
+from tzwhere import tzwhere
+from pytz import timezone
 
 @app.route(SERVICE_URL + '/news/add', methods=['GET','POST','PUT','UPDATE','DELETE'])
 @crossdomain(fk=fk, app=app, origin='*')
@@ -36,6 +44,7 @@ def add_news():
                     _news.content = content
                     _news.country = country
                     _news.coverage = coverage
+                    _news.importance = news_importance(content)
                     _news.save()
                     return service_response(200, 'News created', 'News added with success.')
                 else:
@@ -69,6 +78,7 @@ def edit_news(news_id):
                 if _news_check is None:
                     _news.radio = radio
                     _news.content = content
+                    _news.importance = news_importance(content)
                     _news.status = status
                     _news.received = received
                     _news.country = country
@@ -92,15 +102,41 @@ def edit_news(news_id):
 @crossdomain(fk=fk, app=app, origin='*')
 def news_pushing_country(country):
     if fk.request.method == 'GET':
-        day = str(datetime.date.today().isoformat())
+        # day = str(datetime.date.today().isoformat())
+        _country_object = pycountry.countries.get(alpha2=region_code_for_number(country))
+        g = geocoders.GoogleV3()
+        tz = tzwhere.tzwhere()
+        place, (lat, lng) = g.geocode(_country_object.name)
+        timeZoneStr = tz.tzNameAt(lat, lng)
+        timeZoneObj = timezone(timeZoneStr)
+        now_time = datetime.now(timezoneObj)
+        day = str(now_time).split(" ")[0]
+        if "-" in str(now_time).split(" ")[1]:
+            country_time = str(now_time).split(" ")[1].split("-")[0]
+        if "+" in str(now_time).split(" ")[1]:
+            country_time = str(now_time).split(" ")[1].split("+")[0]
+        country_hour = int(country_time.split(":")[0])
 
-        news_pulled = News.objects(country=country, status='pulled', day=day).first()
+        news_pulled = News.objects(country=country, status='pulled', day=day).order_by('-importance').first()
 
         if news_pulled:
-            news_pulled.satus = 'pushing'
-            news_pulled.save()
-            news_pushing = news_pulled.info()
-            return service_response(200, 'News to send', news_pulled.info())
+            try:
+                sync_index = news_pulled.coverage.schedule.index("%d:00"%country_hour)
+            except:
+                sync_index = -1
+            if sync_index != -1:
+                coverage = news_pulled.coverage
+                if int(coverage.delivery[int(sync_index)]) <= 10:
+                    news_pulled.satus = 'pushing'
+                    news_pulled.save()
+                    coverage.delivery[int(sync_index)] = str(int(coverage.delivery[int(sync_index)]) + 1)
+                    coverage.save()
+                    news_pushing = news_pulled.info()
+                    return service_response(200, 'News to send', news_pulled.info())
+                else:
+                    return service_response(204, 'No news to send', "The sent news went over the number limit permitted to be sent.")
+            else:
+                return service_response(204, 'No news to send', "The sent news went over the hour limit permitted to sent.")
         else:
             return service_response(204, 'No news to send', "no news at this point.")
     else:
@@ -150,7 +186,15 @@ def news_by_country(country, schedule):
 @crossdomain(fk=fk, app=app, origin='*')
 def news_today_country(country, schedule):
     if fk.request.method == 'GET':
-        day = str(datetime.date.today().isoformat())
+        # day = str(datetime.date.today().isoformat())
+        _country_object = pycountry.countries.get(alpha2=region_code_for_number(country))
+        g = geocoders.GoogleV3()
+        tz = tzwhere.tzwhere()
+        place, (lat, lng) = g.geocode(_country_object.name)
+        timeZoneStr = tz.tzNameAt(lat, lng)
+        timeZoneObj = timezone(timeZoneStr)
+        now_time = datetime.now(timezoneObj)
+        day = str(now_time).split(" ")[0]
         if country == 'all':
             if schedule == 'all':
                 news = [n.info() for n in News.objects(day=day)]

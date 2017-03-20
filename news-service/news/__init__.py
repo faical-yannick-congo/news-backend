@@ -68,5 +68,32 @@ def smartWelcome(country=None):
     else:
         return "Welcome to the News Messaging Service. Thank you for trusting us in delivering your daily news."
 
+def news_importance(message):
+    bag_of_words = ["important", "alert", "mort", "dead", "death", "kill", "tue", "catastroph", "perte", "explosion", "terror", "bomb", "crash", "accident"]
+    bag_of_words.append("incendie")
+    bag_of_words.append("feu")
+    bag_of_words.append("fire")
+    bag_of_words.append("police")
+    bag_of_words.append("attaque")
+    bag_of_words.append("attack")
+    bag_of_words.append("assassin")
+    bag_of_words.append("poison")
+    bag_of_words.append("guerr")
+    bag_of_words.append("war")
+    bag_of_words.append("humanit")
+    bag_of_words.append("kidnap")
+    bag_of_words.append("violen")
+    bag_of_words.append("gun")
+    bag_of_words.append("arme")
+    bag_of_words.append("fire")
+    words = message.split(" ")
+    indice = len(words)
+    for word in words:
+        if word in bag_of_words:
+            indice = indice + 10
+    return indice
+
+
+
 # import all the api endpoints.
 import news.endpoints

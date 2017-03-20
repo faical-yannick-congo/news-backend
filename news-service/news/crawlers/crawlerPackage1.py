@@ -28,7 +28,7 @@ def fetchCNNCSS_USA(url):
     # for desc in soup.find_all('title'):
         desc_content = desc.string.split('&lt;div')[0].split('<div')[0]
         if desc_content != "":
-            interests.append(shortenNews160(desc_content))
+            interests.append(shortenNews160(desc_content.replace("\u003cstrong>", "")))
     return interests
 
 def fetchRTB_BFA(url):

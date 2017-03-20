@@ -4,7 +4,7 @@ from flask.ext.api import status
 import flask as fk
 
 from newsdb.common import crossdomain
-from news import app, SERVICE_URL, service_response
+from news import app, SERVICE_URL, service_response, news_importance
 from newsdb.common.models import Radio, Coverage, News
 from news.crawlers.coreCrawler import CoreCawler
 from time import gmtime, strftime
@@ -16,6 +16,14 @@ import random
 import string
 from io import StringIO
 import hashlib
+import phonenumbers
+from phonenumbers.phonenumberutil import region_code_for_country_code
+from phonenumbers.phonenumberutil import region_code_for_number
+import pycountry
+
+from geopy import geocoders
+from tzwhere import tzwhere
+from pytz import timezone
 
 @app.route(SERVICE_URL + '/cover/add', methods=['GET','POST','PUT','UPDATE','DELETE'])
 @crossdomain(fk=fk, app=app, origin='*')
@@ -27,7 +35,6 @@ def add_cover():
             country = data.get('country', None)
             radios = data.get('radios', None)
             schedule = data.get('schedule', ["6:00"])
-            zone = data.get('zone', None)
             if name is None or country is None or radios is None or zone is None:
                 return service_response(405, 'Coverage addition denied', 'A coverage has to contain a name, country, radios and zone.')
             else:
@@ -40,7 +47,18 @@ def add_cover():
                     _cover.schedule = schedule
                     _cover.synchronization = ["" for s in schedule]
                     _cover.delivery = ["" for s in schedule]
-                    _cover.zone = zone
+                    _country_object = pycountry.countries.get(alpha2=region_code_for_number(country))
+                    g = geocoders.GoogleV3()
+                    tz = tzwhere.tzwhere()
+                    place, (lat, lng) = g.geocode(_country_object.name)
+                    timeZoneStr = tz.tzNameAt(lat, lng)
+                    timeZoneObj = timezone(timeZoneStr)
+                    now_time = datetime.now(timezoneObj)
+                    time_block = str(now_time).split(" ")
+                    if "-" in time_block[1]:
+                        _cover.zone = "GMT-{0}".format(time_block[1].split("-")[1].split(":")[0])
+                    if "+" in time_block[1]:
+                        _cover.zone = "GMT+{0}".format(time_block[1].split("+")[1].split(":")[0)
                     _cover.save()
                     return service_response(200, 'Coverage created', 'Coverage added with success')
                 else:
@@ -64,13 +82,23 @@ def edit_cover(cover_id):
                 schedule = data.get('schedule', _cover.schedule)
                 synchronization = data.get('sync', _cover.synchronization)
                 delivery = data.get('delivery', _cover.delivery)
-                zone = data.get('zone', _cover.zone)
 
                 _cover_check = Coverage.objects(name=name, country=country, zone=zone, radios=radios).first()
                 if _cover_check is None:
                     _cover.name = name
                     _cover.country = country
-                    _cover.zone = zone
+                    _country_object = pycountry.countries.get(alpha2=region_code_for_number(country))
+                    g = geocoders.GoogleV3()
+                    tz = tzwhere.tzwhere()
+                    place, (lat, lng) = g.geocode(_country_object.name)
+                    timeZoneStr = tz.tzNameAt(lat, lng)
+                    timeZoneObj = timezone(timeZoneStr)
+                    now_time = datetime.now(timezoneObj)
+                    time_block = str(now_time).split(" ")
+                    if "-" in time_block[1]:
+                        _cover.zone = "GMT-{0}".format(time_block[1].split("-")[1].split(":")[0])
+                    if "+" in time_block[1]:
+                        _cover.zone = "GMT+{0}".format(time_block[1].split("+")[1].split(":")[0)
                     _cover.radios = [Radio.objects.with_id(radio_id) for radio_id in radios]
                     _cover.schedule = schedule
                     _cover.synchronization = synchronization
@@ -116,29 +144,42 @@ def delete_cover(cover_id):
 def sync_cover(country):
     if fk.request.method == 'GET':
         _covers = Coverage.objects(country=country)
-        day = str(datetime.date.today().isoformat())
-        hour = strftime("%H:%M", gmtime())
-        hour_now = int(hour.split(':')[0])
+        _country_object = pycountry.countries.get(alpha2=region_code_for_number(country))
+        g = geocoders.GoogleV3()
+        tz = tzwhere.tzwhere()
+        place, (lat, lng) = g.geocode(_country_object.name)
+        timeZoneStr = tz.tzNameAt(lat, lng)
+        timeZoneObj = timezone(timeZoneStr)
+        now_time = datetime.now(timezoneObj)
+        day = str(now_time).split(" ")[0]
+        if "-" in str(now_time).split(" ")[1]:
+            country_time = str(now_time).split(" ")[1].split("-")[0]
+        if "+" in str(now_time).split(" ")[1]:
+            country_time = str(now_time).split(" ")[1].split("+")[0]
+        # day = str(datetime.date.today().isoformat())
+        # hour = strftime("%H:%M", gmtime())
+        # hour_now = int(hour.split(':')[0])
         count = 0
         _coverages = []
         for index, _cover in enumerate(_covers):
             if _cover:
-                h_align = _cover.zone.split("GMT")[1]
+                # h_align = _cover.zone.split("GMT")[1]
                 data = {}
                 data['coverage'] = str(_cover.id)
                 data['schedule'] = _cover.schedule
-                if h_align == "":
-                    h_align = "0"
-                hour_sch = int(float(hour_now) + float(h_align))
-                if hour_sch < 0:
-                    hour_sch = 24 + hour_sch
-                elif hour_sch > 24:
-                    hour_sch = hour_sch - 24
-                print("%d:00".format(hour_sch))
-                data['country-time'] = "%d:%s"%(hour_sch, hour.split(':')[1])
+                # if h_align == "":
+                #     h_align = "0"
+                # hour_sch = int(float(hour_now) + float(h_align))
+                # if hour_sch < 0:
+                #     hour_sch = 24 + hour_sch
+                # elif hour_sch > 24:
+                #     hour_sch = hour_sch - 24
+                # print("%d:00".format(hour_sch))
+                data['country-time'] = country_time
                 data['radios'] = {}
                 try:
-                    sync_index = _cover.schedule.index("%d:00"%hour_sch)
+                    country_hour = int(country_time.split(":")[0])
+                    sync_index = _cover.schedule.index("%d:00"%country_hour)
                     sync_status = _cover.synchronization[sync_index]
                     if sync_status == day: # Mean already synchronized today. skip it.
                         sync_index = -1
@@ -147,10 +188,10 @@ def sync_cover(country):
                     # in the closest lower bound scheduled time.
                     sync_index = -1
                     for index in reversed(range(len(_cover.synchronization))):
-                        if hour_sch > int(_cover.schedule[index].split(":")[0]):
+                        if country_hour > int(_cover.schedule[index].split(":")[0]):
                             if _cover.synchronization[index] != day:
                                 sync_index = index
-                                hour_sch = int(_cover.schedule[index].split(":")[0])
+                                country_hour = int(_cover.schedule[index].split(":")[0])
                             break
                     if sync_index != -1:
                         data['comment'] = "coverage schedule %s updated"%_cover.schedule[sync_index]
@@ -173,6 +214,7 @@ def sync_cover(country):
                                 _new.coverage = _cover
                                 _new.schedule = "%d:00"%hour_sch
                                 _new.country = _cover.country
+                                _new.importance = news_importance(new)
                                 _new.save()
                                 data['radios'][radio.name] = data['radios'][radio.name] + 1
                                 sub_count = sub_count + 1
