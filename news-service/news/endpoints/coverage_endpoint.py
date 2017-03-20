@@ -47,7 +47,7 @@ def add_cover():
                     _cover.schedule = schedule
                     _cover.synchronization = ["" for s in schedule]
                     _cover.delivery = ["" for s in schedule]
-                    _country_object = pycountry.countries.get(alpha2=region_code_for_number(country))
+                    _country_object = pycountry.countries.get(alpha_2=region_code_for_number(country))
                     g = geocoders.GoogleV3()
                     tz = tzwhere.tzwhere()
                     place, (lat, lng) = g.geocode(_country_object.name)
@@ -87,7 +87,7 @@ def edit_cover(cover_id):
                 if _cover_check is None:
                     _cover.name = name
                     _cover.country = country
-                    _country_object = pycountry.countries.get(alpha2=region_code_for_number(country))
+                    _country_object = pycountry.countries.get(alpha_2=region_code_for_number(country))
                     g = geocoders.GoogleV3()
                     tz = tzwhere.tzwhere()
                     place, (lat, lng) = g.geocode(_country_object.name)
@@ -144,7 +144,7 @@ def delete_cover(cover_id):
 def sync_cover(country):
     if fk.request.method == 'GET':
         _covers = Coverage.objects(country=country)
-        _country_object = pycountry.countries.get(alpha2=region_code_for_number(country))
+        _country_object = pycountry.countries.get(alpha_2=region_code_for_number(country))
         g = geocoders.GoogleV3()
         tz = tzwhere.tzwhere()
         place, (lat, lng) = g.geocode(_country_object.name)

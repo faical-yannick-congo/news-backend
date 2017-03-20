@@ -103,7 +103,7 @@ def edit_news(news_id):
 def news_pushing_country(country):
     if fk.request.method == 'GET':
         # day = str(datetime.date.today().isoformat())
-        _country_object = pycountry.countries.get(alpha2=region_code_for_number(country))
+        _country_object = pycountry.countries.get(alpha_2=region_code_for_number(country))
         g = geocoders.GoogleV3()
         tz = tzwhere.tzwhere()
         place, (lat, lng) = g.geocode(_country_object.name)
@@ -187,7 +187,7 @@ def news_by_country(country, schedule):
 def news_today_country(country, schedule):
     if fk.request.method == 'GET':
         # day = str(datetime.date.today().isoformat())
-        _country_object = pycountry.countries.get(alpha2=region_code_for_number(country))
+        _country_object = pycountry.countries.get(alpha_2=region_code_for_number(country))
         g = geocoders.GoogleV3()
         tz = tzwhere.tzwhere()
         place, (lat, lng) = g.geocode(_country_object.name)
