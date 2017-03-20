@@ -109,7 +109,7 @@ def news_pushing_country(country):
         place, (lat, lng) = g.geocode(_country_object.name)
         timeZoneStr = tz.tzNameAt(lat, lng)
         timeZoneObj = timezone(timeZoneStr)
-        now_time = datetime.now(timezoneObj)
+        now_time = datetime.datetime.now(timezoneObj)
         day = str(now_time).split(" ")[0]
         if "-" in str(now_time).split(" ")[1]:
             country_time = str(now_time).split(" ")[1].split("-")[0]
@@ -193,7 +193,7 @@ def news_today_country(country, schedule):
         place, (lat, lng) = g.geocode(_country_object.name)
         timeZoneStr = tz.tzNameAt(lat, lng)
         timeZoneObj = timezone(timeZoneStr)
-        now_time = datetime.now(timezoneObj)
+        now_time = datetime.datetime.now(timezoneObj)
         day = str(now_time).split(" ")[0]
         if country == 'all':
             if schedule == 'all':
