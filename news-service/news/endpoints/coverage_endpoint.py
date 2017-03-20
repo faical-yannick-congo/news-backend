@@ -58,7 +58,7 @@ def add_cover():
                     if "-" in time_block[1]:
                         _cover.zone = "GMT-{0}".format(time_block[1].split("-")[1].split(":")[0])
                     if "+" in time_block[1]:
-                        _cover.zone = "GMT+{0}".format(time_block[1].split("+")[1].split(":")[0)
+                        _cover.zone = "GMT+{0}".format(time_block[1].split("+")[1].split(":")[0])
                     _cover.save()
                     return service_response(200, 'Coverage created', 'Coverage added with success')
                 else:
@@ -98,7 +98,7 @@ def edit_cover(cover_id):
                     if "-" in time_block[1]:
                         _cover.zone = "GMT-{0}".format(time_block[1].split("-")[1].split(":")[0])
                     if "+" in time_block[1]:
-                        _cover.zone = "GMT+{0}".format(time_block[1].split("+")[1].split(":")[0)
+                        _cover.zone = "GMT+{0}".format(time_block[1].split("+")[1].split(":")[0])
                     _cover.radios = [Radio.objects.with_id(radio_id) for radio_id in radios]
                     _cover.schedule = schedule
                     _cover.synchronization = synchronization
