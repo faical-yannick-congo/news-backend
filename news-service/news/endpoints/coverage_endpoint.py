@@ -53,7 +53,7 @@ def add_cover():
                     place, (lat, lng) = g.geocode(_country_object.name)
                     timeZoneStr = tz.tzNameAt(lat, lng)
                     timeZoneObj = timezone(timeZoneStr)
-                    now_time = datetime.datetime.now(timezoneObj)
+                    now_time = datetime.datetime.now(timeZoneObj)
                     time_block = str(now_time).split(" ")
                     if "-" in time_block[1]:
                         _cover.zone = "GMT-{0}".format(time_block[1].split("-")[1].split(":")[0])
@@ -93,7 +93,7 @@ def edit_cover(cover_id):
                     place, (lat, lng) = g.geocode(_country_object.name)
                     timeZoneStr = tz.tzNameAt(lat, lng)
                     timeZoneObj = timezone(timeZoneStr)
-                    now_time = datetime.datetime.now(timezoneObj)
+                    now_time = datetime.datetime.now(timeZoneObj)
                     time_block = str(now_time).split(" ")
                     if "-" in time_block[1]:
                         _cover.zone = "GMT-{0}".format(time_block[1].split("-")[1].split(":")[0])
@@ -150,7 +150,7 @@ def sync_cover(country):
         place, (lat, lng) = g.geocode(_country_object.name)
         timeZoneStr = tz.tzNameAt(lat, lng)
         timeZoneObj = timezone(timeZoneStr)
-        now_time = datetime.datetime.now(timezoneObj)
+        now_time = datetime.datetime.now(timeZoneObj)
         day = str(now_time).split(" ")[0]
         if "-" in str(now_time).split(" ")[1]:
             country_time = str(now_time).split(" ")[1].split("-")[0]
