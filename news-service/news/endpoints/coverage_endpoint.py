@@ -35,10 +35,10 @@ def add_cover():
             country = data.get('country', None)
             radios = data.get('radios', None)
             schedule = data.get('schedule', ["6:00"])
-            if name is None or country is None or radios is None or zone is None:
+            if name is None or country is None or radios is None:
                 return service_response(405, 'Coverage addition denied', 'A coverage has to contain a name, country, radios and zone.')
             else:
-                _cover = Coverage.objects(name=name, country=country, zone=zone).first()
+                _cover = Coverage.objects(name=name, country=country).first()
                 if _cover is None:
                     _cover = Coverage(updated_at=str(datetime.datetime.utcnow()))
                     _cover.name = name
@@ -83,7 +83,7 @@ def edit_cover(cover_id):
                 synchronization = data.get('sync', _cover.synchronization)
                 delivery = data.get('delivery', _cover.delivery)
 
-                _cover_check = Coverage.objects(name=name, country=country, zone=zone, radios=radios).first()
+                _cover_check = Coverage.objects(name=name, country=country, radios=radios).first()
                 if _cover_check is None:
                     _cover.name = name
                     _cover.country = country
