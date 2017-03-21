@@ -72,11 +72,13 @@ def news_importance(message=None):
     bag_of_words = ["important", "alert", "mort", "dead", "death", "kill", "tue", "catastroph", "perte", "explosion"]
     bag_of_words.extend(["incendie", "feu", "fire", "police", "attaque", "attack", "assassin", "poison", "guerr", "war"])
     bag_of_words.extend(["humanit", "kidnap", "violen", "gun", "arme", "fire", "election", "prison", "save", "sauve"])
-    bag_of_words.extend(["bad", "mauvais", "good", "bon", "ban", "interdi", "help", "aide", "vol", "steel", "rub", "terror"])
+    bag_of_words.extend(["bad", "mauvais", "good", "bon", "ban", "interdi", "help", "aide", "vol", "steel", "rub"])
     bag_of_words.extend(["hirt", "bless", "beauti", "rare", "child", "wom", "black", "white", "epic", "virus", "bacter"])
     bag_of_words.extend(["exception", "vaccin", "deas", "malad", "viral", "vital", "critical", "fatal", "happ", "heure"])
     bag_of_words.extend(["hot", "negocia", "paix", "peace", "united", "reconci", "nuclear", "bomb", "crash", "accident"])
-    bag_of_words.extend(["tens", "tendu", "abduct", "viol", "rape", "freedom", "liber", "jail", "banqu", "bank", "welcome"])
+    bag_of_words.extend(["tens", "tendu", "abduct", "viol", "rape", "freedom", "liber", "jail", "banqu", "bank"])
+    bag_of_words.extend(["welcome", "terror", "warn", "destr", "detrui", "burn", "batail", "fight"])
+
 
     if message:
         words = message.split(" ")
