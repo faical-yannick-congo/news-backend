@@ -2,10 +2,10 @@ import bs4
 import requests
 
 def shortenNews160(message):
-    if len(str(message).encode('utf-8')) > 120:
-        return "{0}...".format(str(message).decode('UTF-8')[:117].decode('UTF-8'))
-    else:
-        return message
+    # if len(str(message).encode('utf-8')) > 120:
+    #     return "{0}...".format(str(message).decode('UTF-8')[:117].decode('UTF-8'))
+    # else:
+    return "Service: sms-news v0.1\n{0}".format(message)
 
 def fetchCNN_USA(url):
     page = requests.get(url)
