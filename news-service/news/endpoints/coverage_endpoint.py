@@ -163,6 +163,7 @@ def sync_cover(country):
         # day = str(datetime.date.today().isoformat())
         # hour = strftime("%H:%M", gmtime())
         # hour_now = int(hour.split(':')[0])
+        country_hour = int(country_time.split(":")[0])
         count = 0
         _coverages = []
         for index, _cover in enumerate(_covers):
@@ -182,7 +183,6 @@ def sync_cover(country):
                 data['country-time'] = country_time
                 data['radios'] = {}
                 try:
-                    country_hour = int(country_time.split(":")[0])
                     sync_index = _cover.schedule.index("%d:00"%country_hour)
                     sync_status = _cover.synchronization[sync_index]
                     if sync_status == day: # Mean already synchronized today. skip it.
@@ -216,7 +216,7 @@ def sync_cover(country):
                                 _new.content = new
                                 _new.day = day
                                 _new.coverage = _cover
-                                _new.schedule = "%d:00"%hour_sch
+                                _new.schedule = "%d:00"%country_hour
                                 _new.country = _cover.country
                                 _new.importance = news_importance(new)
                                 _new.save()
