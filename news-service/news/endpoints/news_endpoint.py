@@ -4,8 +4,8 @@ from flask.ext.api import status
 import flask as fk
 
 from newsdb.common import crossdomain
-from news import app, SERVICE_URL, service_response
-from newsdb.common.models import Country, Radio, Coverage, News
+from news import app, SERVICE_URL, service_response, get_one_number
+from newsdb.common.models import Radio, Coverage, News
 
 import mimetypes
 import traceback
@@ -103,8 +103,7 @@ def edit_news(news_id):
 def news_pushing_country(country):
     if fk.request.method == 'GET':
         # day = str(datetime.date.today().isoformat())
-        _country = Country.objects(code=country).first()
-        pn = example_number_for_type(_country.name.split(":")[0], 1)
+        pn = phonenumbers.parse(get_one_number(country), None)
         _country_object = pycountry.countries.get(alpha_2=region_code_for_number(pn))
         g = geocoders.GoogleV3()
         tz = tzwhere.tzwhere()
@@ -189,8 +188,7 @@ def news_by_country(country, schedule):
 def news_today_country(country, schedule):
     if fk.request.method == 'GET':
         # day = str(datetime.date.today().isoformat())
-        _country = Country.objects(code=country).first()
-        pn = example_number_for_type(_country.name.split(":")[0], 1)
+        pn = phonenumbers.parse(get_one_number(country), None)
         _country_object = pycountry.countries.get(alpha_2=region_code_for_number(pn))
         g = geocoders.GoogleV3()
         tz = tzwhere.tzwhere()

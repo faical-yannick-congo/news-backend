@@ -4,8 +4,8 @@ from flask.ext.api import status
 import flask as fk
 
 from newsdb.common import crossdomain
-from news import app, SERVICE_URL, service_response, news_importance
-from newsdb.common.models import Country, Radio, Coverage, News
+from news import app, SERVICE_URL, service_response, news_importance, get_one_number
+from newsdb.common.models import Radio, Coverage, News
 from news.crawlers.coreCrawler import CoreCawler
 from time import gmtime, strftime
 
@@ -48,8 +48,7 @@ def add_cover():
                     _cover.synchronization = ["" for s in schedule]
                     _cover.delivery = ["" for s in schedule]
 
-                    _country = Country.objects(code=country).first()
-                    pn = example_number_for_type(_country.name.split(":")[0], 1)
+                    pn = phonenumbers.parse(get_one_number(country), None)
                     _country_object = pycountry.countries.get(alpha_2=region_code_for_number(pn))
                     g = geocoders.GoogleV3()
                     tz = tzwhere.tzwhere()
@@ -90,8 +89,7 @@ def edit_cover(cover_id):
                 if _cover_check is None:
                     _cover.name = name
                     _cover.country = country
-                    _country = Country.objects(code=country).first()
-                    pn = example_number_for_type(_country.name.split(":")[0], 1)
+                    pn = phonenumbers.parse(get_one_number(country), None)
                     _country_object = pycountry.countries.get(alpha_2=region_code_for_number(pn))
                     g = geocoders.GoogleV3()
                     tz = tzwhere.tzwhere()
@@ -149,8 +147,7 @@ def delete_cover(cover_id):
 def sync_cover(country):
     if fk.request.method == 'GET':
         _covers = Coverage.objects(country=country)
-        _country = Country.objects(code=country).first()
-        pn = example_number_for_type(_country.name.split(":")[0], 1)
+        pn = phonenumbers.parse(get_one_number(country), None)
         _country_object = pycountry.countries.get(alpha_2=region_code_for_number(pn))
         g = geocoders.GoogleV3()
         tz = tzwhere.tzwhere()

@@ -93,6 +93,10 @@ def news_importance(message):
             indice = indice + 10
     return indice
 
+def get_one_number(country):
+    r = requests.get('http://54.196.141.56:5300/sms/services/sso/v0.1/users/country/{0}'.format(country))
+    response = json.loads(r.text)
+    return response['content']['users'][0]['phone']
 
 
 # import all the api endpoints.
