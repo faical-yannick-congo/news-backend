@@ -127,10 +127,14 @@ def news_pushing_country(country):
                 sync_index = -1
             if sync_index != -1:
                 coverage = news_pulled.coverage
-                if int(coverage.delivery[int(sync_index)]) <= 10:
+                if coverage.delivery[int(sync_index)] == "":
+                    delivery = 0
+                else:
+                    delivery = int(coverage.delivery[int(sync_index)])
+                if  delivery <= 10:
                     news_pulled.satus = 'pushing'
                     news_pulled.save()
-                    coverage.delivery[int(sync_index)] = str(int(coverage.delivery[int(sync_index)]) + 1)
+                    coverage.delivery[int(sync_index)] = str(delivery + 1)
                     coverage.save()
                     news_pushing = news_pulled.info()
                     return service_response(200, 'News to send', news_pulled.info())
