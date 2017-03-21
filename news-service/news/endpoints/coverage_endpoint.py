@@ -227,7 +227,7 @@ def sync_cover(country):
                 data['news'] = sub_count
                 _coverages.append(data)
 
-        return service_response(200, 'Coverage sync succeeded', {'now-gmt': hour, 'news':count, 'coverages':_coverages})
+        return service_response(200, 'Coverage sync succeeded', {'now-gmt': strftime("%H:%M", gmtime()), 'news':count, 'coverages':_coverages})
     else:
         return service_response(405, 'Method not allowed', 'This endpoint supports only a GET method.')
 
