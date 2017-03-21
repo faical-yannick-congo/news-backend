@@ -209,9 +209,9 @@ def sync_cover(country):
                         crawler = CoreCawler()
                         news = crawler.fetch(radio.url)
                         for new in news:
-                            _new_fetch = News.objects(coverage=_cover, day=day, content=new, country=_cover.country).first()
-                            if _new_fetch is None and new != None:
-                                _new = News(created_at=str(datetime.datetime.utcnow()))
+                            _new, created = News.objects(coverage=_cover, day=day, content=new, country=_cover.country)
+                            if created:
+                                _new.created_at = str(datetime.datetime.utcnow())
                                 _new.radio = radio
                                 _new.content = new
                                 _new.day = day
