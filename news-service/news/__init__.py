@@ -68,7 +68,7 @@ def smartWelcome(country=None):
     else:
         return "Welcome to the News Messaging Service. Thank you for trusting us in delivering your daily news."
 
-def news_importance(message):
+def news_importance(message=None):
     bag_of_words = ["important", "alert", "mort", "dead", "death", "kill", "tue", "catastroph", "perte", "explosion", "terror", "bomb", "crash", "accident"]
     bag_of_words.append("incendie")
     bag_of_words.append("feu")
@@ -86,12 +86,15 @@ def news_importance(message):
     bag_of_words.append("gun")
     bag_of_words.append("arme")
     bag_of_words.append("fire")
-    words = message.split(" ")
-    indice = len(words)
-    for word in words:
-        if word in bag_of_words:
-            indice = indice + 10
-    return indice
+    if message:
+        words = message.split(" ")
+        indice = len(words)
+        for word in words:
+            if word in bag_of_words:
+                indice = indice + 10
+        return indice
+    else:
+        return 0
 
 def get_one_number(country):
     r = requests.get('http://54.196.141.56:5300/sms/services/sso/v0.1/users/country/{0}'.format(country))

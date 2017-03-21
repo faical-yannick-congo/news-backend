@@ -210,7 +210,7 @@ def sync_cover(country):
                         news = crawler.fetch(radio.url)
                         for new in news:
                             _new = News.objects(coverage=_cover, day=day, content=new, country=_cover.country).first()
-                            if _new is None:
+                            if _new is None and new != None:
                                 _new = News(created_at=str(datetime.datetime.utcnow()))
                                 _new.radio = radio
                                 _new.content = new
