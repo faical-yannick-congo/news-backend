@@ -4,7 +4,7 @@ from flask.ext.api import status
 import flask as fk
 
 from newsdb.common import crossdomain
-from news import app, SERVICE_URL, service_response, get_one_number
+from news import app, SERVICE_URL, service_response, get_one_number, menu
 from newsdb.common.models import Radio, Coverage, News
 
 import mimetypes
@@ -22,6 +22,14 @@ import pycountry
 from geopy import geocoders
 from tzwhere import tzwhere
 from pytz import timezone
+
+@app.route(SERVICE_URL + '/menu', methods=['GET','POST','PUT','UPDATE','DELETE'])
+@crossdomain(fk=fk, app=app, origin='*')
+def service_menu():
+    if fk.request.method == 'GET':
+        return service_response(200, 'Service Menu', menu())
+    else:
+        return service_response(405, 'Method not allowed', 'This endpoint supports only a GET method.')
 
 @app.route(SERVICE_URL + '/news/add', methods=['GET','POST','PUT','UPDATE','DELETE'])
 @crossdomain(fk=fk, app=app, origin='*')

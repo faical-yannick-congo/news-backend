@@ -58,15 +58,8 @@ def merge_dicts(*dict_args):
         result.update(dictionary)
     return result
 
-def smartWelcome(country=None):
-    if country in ["212"]:
-        return "Bienvenue dans le service de messagerie. Nous vous remercions de nous avoir fait confiance dans la prestation de vos nouvelles quotidiennes."
-    elif country in ["34"]:
-        return "Bienvenido al servicio de mensajeria. Gracias por confiar en nosotros en la entrega de sus noticias diarias."
-    elif country in ["33", "226", "227"]:
-        return "Bienvenue dans le service de messagerie. Nous vous remercions de nous avoir fait confiance dans la prestation de vos nouvelles quotidiennes."
-    else:
-        return "Welcome to the News Messaging Service. Thank you for trusting us in delivering your daily news."
+def menu():
+    return "Welcome to the News Messaging Service. Thank you for trusting us in delivering your daily news."
 
 def news_importance(message=None):
     bag_of_words = ["important", "alert", "mort", "dead", "death", "kill", "tue", "catastroph", "perte", "explosion"]
@@ -78,7 +71,6 @@ def news_importance(message=None):
     bag_of_words.extend(["hot", "negocia", "paix", "peace", "united", "reconci", "nuclear", "bomb", "crash", "accident"])
     bag_of_words.extend(["tens", "tendu", "abduct", "viol", "rape", "freedom", "liber", "jail", "banqu", "bank"])
     bag_of_words.extend(["welcome", "terror", "warn", "destr", "detrui", "burn", "batail", "fight"])
-
 
     if message:
         words = message.split(" ")
