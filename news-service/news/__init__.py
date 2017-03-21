@@ -69,29 +69,21 @@ def smartWelcome(country=None):
         return "Welcome to the News Messaging Service. Thank you for trusting us in delivering your daily news."
 
 def news_importance(message=None):
-    bag_of_words = ["important", "alert", "mort", "dead", "death", "kill", "tue", "catastroph", "perte", "explosion", "terror", "bomb", "crash", "accident"]
-    bag_of_words.append("incendie")
-    bag_of_words.append("feu")
-    bag_of_words.append("fire")
-    bag_of_words.append("police")
-    bag_of_words.append("attaque")
-    bag_of_words.append("attack")
-    bag_of_words.append("assassin")
-    bag_of_words.append("poison")
-    bag_of_words.append("guerr")
-    bag_of_words.append("war")
-    bag_of_words.append("humanit")
-    bag_of_words.append("kidnap")
-    bag_of_words.append("violen")
-    bag_of_words.append("gun")
-    bag_of_words.append("arme")
-    bag_of_words.append("fire")
+    bag_of_words = ["important", "alert", "mort", "dead", "death", "kill", "tue", "catastroph", "perte", "explosion"]
+    bag_of_words.extend(["incendie", "feu", "fire", "police", "attaque", "attack", "assassin", "poison", "guerr", "war"])
+    bag_of_words.extend(["humanit", "kidnap", "violen", "gun", "arme", "fire", "election", "prison", "save", "sauve"])
+    bag_of_words.extend(["bad", "mauvais", "good", "bon", "ban", "interdi", "help", "aide", "vol", "steel", "rub", "terror"])
+    bag_of_words.extend(["hirt", "bless", "beauti", "rare", "child", "wom", "black", "white", "epic", "virus", "bacter"])
+    bag_of_words.extend(["exception", "vaccin", "deas", "malad", "viral", "vital", "critical", "fatal", "happ", "heure"])
+    bag_of_words.extend(["hot", "negocia", "paix", "peace", "united", "reconci", "nuclear", "bomb", "crash", "accident"])
+    bag_of_words.extend(["tens", "tendu", "abduct", "viol", "rape", "freedom", "liber", "jail", "banqu", "bank", "welcome"])
+
     if message:
         words = message.split(" ")
         indice = len(words)
         for word in words:
-            if word in bag_of_words:
-                indice = indice + 10
+            if word.lower() in bag_of_words:
+                indice = indice + 5
         return indice
     else:
         return 0

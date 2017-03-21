@@ -3,7 +3,7 @@ import requests
 
 def shortenNews160(message):
     if len(str(message).encode('utf-8')) > 120:
-        return "{0}...".format(str(message).encode('utf-8')[:117])
+        return "{0}...".format(str(message).decode('UTF-8')[:117].decode('UTF-8'))
     else:
         return message
 
