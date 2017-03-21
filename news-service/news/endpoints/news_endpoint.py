@@ -139,7 +139,7 @@ def news_pushing_country(country):
             else:
                 return service_response(204, 'No news to send', "The sent news went over the hour limit permitted to sent.")
         else:
-            return service_response(204, 'No news to send', "no news at this point.")
+            return service_response(204, 'No news to send', "no news at this point.{0}".format(day))
     else:
         return service_response(405, 'Method not allowed', 'This endpoint supports only a GET method.')
 
