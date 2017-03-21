@@ -21,7 +21,6 @@ class News(db.Document):
 
     def save(self, *args, **kwargs):
         self.updated_at = str(datetime.datetime.utcnow())
-        self.day = str(datetime.date.today().isoformat())
         return super(News, self).save(*args, **kwargs)
 
     def info(self):
