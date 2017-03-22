@@ -220,7 +220,7 @@ def sync_cover(country):
                                 sub_count = sub_count + 1
                     count = count + sub_count
                     _cover.synchronization[int(sync_index)] = day
-                    _cover.delivery[int(sync_index)] = 0
+                    _cover.delivery[int(sync_index)] = "0"
                     _cover.save()
                     data['status'] = 'processed'
                 else:
