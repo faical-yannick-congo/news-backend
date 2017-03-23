@@ -135,10 +135,9 @@ def news_pushing_country(country):
 
             if news_pulled:
                 sync_index = -1
-                syncs = news_pulled.synchronization
                 coverage = news_pulled.coverage
-                for sync_i in range(len(syncs)):
-                    if syncs[sync_i] == day:
+                for sync_i in range(len(coverage.synchronization)):
+                    if coverage.synchronization[sync_i] == day:
                         if coverage.delivery[sync_i] == "":
                             delivery = 0
                         else:
