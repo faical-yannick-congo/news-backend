@@ -48,21 +48,26 @@ def add_cover():
                     _cover.synchronization = ["" for s in schedule]
                     _cover.delivery = ["" for s in schedule]
 
-                    pn = phonenumbers.parse(get_one_number(country), None)
-                    _country_object = pycountry.countries.get(alpha_2=region_code_for_number(pn))
-                    g = geocoders.GoogleV3()
-                    tz = tzwhere.tzwhere()
-                    place, (lat, lng) = g.geocode(_country_object.name, timeout=10)
-                    timeZoneStr = tz.tzNameAt(lat, lng)
-                    timeZoneObj = timezone(timeZoneStr)
-                    now_time = datetime.datetime.now(timeZoneObj)
-                    time_block = str(now_time).split(" ")
-                    if "-" in time_block[1]:
-                        _cover.zone = "GMT-{0}".format(time_block[1].split("-")[1].split(":")[0])
-                    if "+" in time_block[1]:
-                        _cover.zone = "GMT+{0}".format(time_block[1].split("+")[1].split(":")[0])
-                    _cover.save()
-                    return service_response(200, 'Coverage created', 'Coverage added with success')
+                    _country = get_country(country)
+                    if _country is None:
+                        return service_response(204, 'Unknown country', 'We could not find this country.')
+                    else:
+                        lat = _country["lat"]
+                        lng = _country["lng"]
+                        if lat == "":
+                            lat = 0.00
+                            lng = 0.00
+                        tz = tzwhere.tzwhere()
+                        timeZoneStr = tz.tzNameAt(lat, lng)
+                        timeZoneObj = timezone(timeZoneStr)
+                        now_time = datetime.datetime.now(timeZoneObj)
+                        time_block = str(now_time).split(" ")
+                        if "-" in time_block[1]:
+                            _cover.zone = "GMT-{0}".format(time_block[1].split("-")[1].split(":")[0])
+                        if "+" in time_block[1]:
+                            _cover.zone = "GMT+{0}".format(time_block[1].split("+")[1].split(":")[0])
+                        _cover.save()
+                        return service_response(200, 'Coverage created', 'Coverage added with success')
                 else:
                     return service_response(204, 'Coverage addition denied', 'A coverage with this name, country, radios and zone already exists.')
         else:
@@ -89,25 +94,30 @@ def edit_cover(cover_id):
                 if _cover_check is None:
                     _cover.name = name
                     _cover.country = country
-                    pn = phonenumbers.parse(get_one_number(country), None)
-                    _country_object = pycountry.countries.get(alpha_2=region_code_for_number(pn))
-                    g = geocoders.GoogleV3()
-                    tz = tzwhere.tzwhere()
-                    place, (lat, lng) = g.geocode(_country_object.name, timeout=10)
-                    timeZoneStr = tz.tzNameAt(lat, lng)
-                    timeZoneObj = timezone(timeZoneStr)
-                    now_time = datetime.datetime.now(timeZoneObj)
-                    time_block = str(now_time).split(" ")
-                    if "-" in time_block[1]:
-                        _cover.zone = "GMT-{0}".format(time_block[1].split("-")[1].split(":")[0])
-                    if "+" in time_block[1]:
-                        _cover.zone = "GMT+{0}".format(time_block[1].split("+")[1].split(":")[0])
-                    _cover.radios = [Radio.objects.with_id(radio_id) for radio_id in radios]
-                    _cover.schedule = schedule
-                    _cover.synchronization = synchronization
-                    _cover.delivery = delivery
-                    _cover.save()
-                    return service_response(200, 'Edition succeeded', 'Coverage {0} edited.'.format(cover_id))
+                    _country = get_country(country)
+                    if _country is None:
+                        return service_response(204, 'Unknown country', 'We could not find this country.')
+                    else:
+                        lat = _country["lat"]
+                        lng = _country["lng"]
+                        if lat == "":
+                            lat = 0.00
+                            lng = 0.00
+                        tz = tzwhere.tzwhere()
+                        timeZoneStr = tz.tzNameAt(lat, lng)
+                        timeZoneObj = timezone(timeZoneStr)
+                        now_time = datetime.datetime.now(timeZoneObj)
+                        time_block = str(now_time).split(" ")
+                        if "-" in time_block[1]:
+                            _cover.zone = "GMT-{0}".format(time_block[1].split("-")[1].split(":")[0])
+                        if "+" in time_block[1]:
+                            _cover.zone = "GMT+{0}".format(time_block[1].split("+")[1].split(":")[0])
+                        _cover.radios = [Radio.objects.with_id(radio_id) for radio_id in radios]
+                        _cover.schedule = schedule
+                        _cover.synchronization = synchronization
+                        _cover.delivery = delivery
+                        _cover.save()
+                        return service_response(200, 'Edition succeeded', 'Coverage {0} edited.'.format(cover_id))
                 else:
                     return service_response(204, 'Coverage edition denied', 'A coverage with this name, country, zone and radios already exists.')
             else:
@@ -147,88 +157,93 @@ def delete_cover(cover_id):
 def sync_cover(country):
     if fk.request.method == 'GET':
         _covers = Coverage.objects(country=country)
-        pn = phonenumbers.parse(get_one_number(country), None)
-        _country_object = pycountry.countries.get(alpha_2=region_code_for_number(pn))
-        g = geocoders.GoogleV3()
-        tz = tzwhere.tzwhere()
-        place, (lat, lng) = g.geocode(_country_object.name, timeout=10)
-        timeZoneStr = tz.tzNameAt(lat, lng)
-        timeZoneObj = timezone(timeZoneStr)
-        now_time = datetime.datetime.now(timeZoneObj)
-        day = str(now_time).split(" ")[0]
-        if "-" in str(now_time).split(" ")[1]:
-            country_time = str(now_time).split(" ")[1].split("-")[0]
-        if "+" in str(now_time).split(" ")[1]:
-            country_time = str(now_time).split(" ")[1].split("+")[0]
-        # day = str(datetime.date.today().isoformat())
-        # hour = strftime("%H:%M", gmtime())
-        # hour_now = int(hour.split(':')[0])
-        country_hour = int(country_time.split(":")[0])
-        count = 0
-        _coverages = []
-        for index, _cover in enumerate(_covers):
-            if _cover:
-                # h_align = _cover.zone.split("GMT")[1]
-                data = {}
-                data['coverage'] = str(_cover.id)
-                data['schedule'] = _cover.schedule
-                # if h_align == "":
-                #     h_align = "0"
-                # hour_sch = int(float(hour_now) + float(h_align))
-                # if hour_sch < 0:
-                #     hour_sch = 24 + hour_sch
-                # elif hour_sch > 24:
-                #     hour_sch = hour_sch - 24
-                # print("%d:00".format(hour_sch))
-                data['country-time'] = country_time
-                data['radios'] = {}
-                try:
-                    sync_index = _cover.schedule.index("%d:00"%country_hour)
-                    sync_status = _cover.synchronization[sync_index]
-                    if sync_status == day: # Mean already synchronized today. skip it.
+        _country = get_country(country)
+        if _country is None:
+            return service_response(204, 'Unknown country', 'We could not find this country.')
+        else:
+            lat = _country["lat"]
+            lng = _country["lng"]
+            if lat == "":
+                lat = 0.00
+                lng = 0.00
+            tz = tzwhere.tzwhere()
+            timeZoneStr = tz.tzNameAt(lat, lng)
+            timeZoneObj = timezone(timeZoneStr)
+            now_time = datetime.datetime.now(timeZoneObj)
+            day = str(now_time).split(" ")[0]
+            if "-" in str(now_time).split(" ")[1]:
+                country_time = str(now_time).split(" ")[1].split("-")[0]
+            if "+" in str(now_time).split(" ")[1]:
+                country_time = str(now_time).split(" ")[1].split("+")[0]
+            # day = str(datetime.date.today().isoformat())
+            # hour = strftime("%H:%M", gmtime())
+            # hour_now = int(hour.split(':')[0])
+            country_hour = int(country_time.split(":")[0])
+            count = 0
+            _coverages = []
+            for index, _cover in enumerate(_covers):
+                if _cover:
+                    # h_align = _cover.zone.split("GMT")[1]
+                    data = {}
+                    data['coverage'] = str(_cover.id)
+                    data['schedule'] = _cover.schedule
+                    # if h_align == "":
+                    #     h_align = "0"
+                    # hour_sch = int(float(hour_now) + float(h_align))
+                    # if hour_sch < 0:
+                    #     hour_sch = 24 + hour_sch
+                    # elif hour_sch > 24:
+                    #     hour_sch = hour_sch - 24
+                    # print("%d:00".format(hour_sch))
+                    data['country-time'] = country_time
+                    data['radios'] = {}
+                    try:
+                        sync_index = _cover.schedule.index("%d:00"%country_hour)
+                        sync_status = _cover.synchronization[sync_index]
+                        if sync_status == day: # Mean already synchronized today. skip it.
+                            sync_index = -1
+                    except:
+                        # When the time is not scheduled look for inconsistencies to fix specially
+                        # in the closest lower bound scheduled time.
                         sync_index = -1
-                except:
-                    # When the time is not scheduled look for inconsistencies to fix specially
-                    # in the closest lower bound scheduled time.
-                    sync_index = -1
-                    for index in reversed(range(len(_cover.synchronization))):
-                        if country_hour > int(_cover.schedule[index].split(":")[0]):
-                            if _cover.synchronization[index] != day:
-                                sync_index = index
-                                country_hour = int(_cover.schedule[index].split(":")[0])
-                            break
+                        for index in reversed(range(len(_cover.synchronization))):
+                            if country_hour > int(_cover.schedule[index].split(":")[0]):
+                                if _cover.synchronization[index] != day:
+                                    sync_index = index
+                                    country_hour = int(_cover.schedule[index].split(":")[0])
+                                break
+                        if sync_index != -1:
+                            data['comment'] = "coverage schedule %s updated"%_cover.schedule[sync_index]
+
+                    for r in _cover.radios:
+                        data['radios'][r.name] = 0
+                    sub_count = 0
                     if sync_index != -1:
-                        data['comment'] = "coverage schedule %s updated"%_cover.schedule[sync_index]
+                        radios = _cover.radios
+                        for radio in _cover.radios:
+                            crawler = CoreCawler()
+                            news = crawler.fetch(radio.url)
+                            for new in news:
+                                _new, created = News.objects.get_or_create(coverage=_cover, radio=radio, day=day, content=new, country=_cover.country)
+                                if created:
+                                    _new.created_at = str(datetime.datetime.utcnow())
+                                    _new.content = new
+                                    _new.schedule = "%d:00"%country_hour
+                                    _new.importance = news_importance(new)
+                                    _new.save()
+                                    data['radios'][radio.name] = data['radios'][radio.name] + 1
+                                    sub_count = sub_count + 1
+                        count = count + sub_count
+                        _cover.synchronization[int(sync_index)] = day
+                        _cover.delivery[int(sync_index)] = "0"
+                        _cover.save()
+                        data['status'] = 'processed'
+                    else:
+                        data['status'] = 'skiped'
+                    data['news'] = sub_count
+                    _coverages.append(data)
 
-                for r in _cover.radios:
-                    data['radios'][r.name] = 0
-                sub_count = 0
-                if sync_index != -1:
-                    radios = _cover.radios
-                    for radio in _cover.radios:
-                        crawler = CoreCawler()
-                        news = crawler.fetch(radio.url)
-                        for new in news:
-                            _new, created = News.objects.get_or_create(coverage=_cover, radio=radio, day=day, content=new, country=_cover.country)
-                            if created:
-                                _new.created_at = str(datetime.datetime.utcnow())
-                                _new.content = new
-                                _new.schedule = "%d:00"%country_hour
-                                _new.importance = news_importance(new)
-                                _new.save()
-                                data['radios'][radio.name] = data['radios'][radio.name] + 1
-                                sub_count = sub_count + 1
-                    count = count + sub_count
-                    _cover.synchronization[int(sync_index)] = day
-                    _cover.delivery[int(sync_index)] = "0"
-                    _cover.save()
-                    data['status'] = 'processed'
-                else:
-                    data['status'] = 'skiped'
-                data['news'] = sub_count
-                _coverages.append(data)
-
-        return service_response(200, 'Coverage sync succeeded', {'now-gmt': strftime("%H:%M", gmtime()), 'news':count, 'coverages':_coverages})
+            return service_response(200, 'Coverage sync succeeded', {'now-gmt': strftime("%H:%M", gmtime()), 'news':count, 'coverages':_coverages})
     else:
         return service_response(405, 'Method not allowed', 'This endpoint supports only a GET method.')
 

@@ -87,6 +87,13 @@ def get_one_number(country):
     response = json.loads(r.text)
     return response['content']['users'][0]['phone']
 
+def get_country(country):
+    r = requests.get('http://54.196.141.56:5300/sms/services/sso/v0.1/users/countries')
+    response = json.loads(r.text)
+    for cnt in response['content']['countries']:
+        if int(cnt["code"]) == int(country):
+            return cnt
+    return None
 
 # import all the api endpoints.
 import news.endpoints

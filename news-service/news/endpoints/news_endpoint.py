@@ -111,59 +111,64 @@ def edit_news(news_id):
 def news_pushing_country(country):
     if fk.request.method == 'GET':
         # day = str(datetime.date.today().isoformat())
-        pn = phonenumbers.parse(get_one_number(country), None)
-        _country_object = pycountry.countries.get(alpha_2=region_code_for_number(pn))
-        g = geocoders.GoogleV3()
-        tz = tzwhere.tzwhere()
-        place, (lat, lng) = g.geocode(_country_object.name, timeout=10)
-        timeZoneStr = tz.tzNameAt(lat, lng)
-        timeZoneObj = timezone(timeZoneStr)
-        now_time = datetime.datetime.now(timeZoneObj)
-        day = str(now_time).split(" ")[0]
-        if "-" in str(now_time).split(" ")[1]:
-            country_time = str(now_time).split(" ")[1].split("-")[0]
-        if "+" in str(now_time).split(" ")[1]:
-            country_time = str(now_time).split(" ")[1].split("+")[0]
-        country_hour = int(country_time.split(":")[0])
-
-        news_pulled = News.objects(country=country, status='pulled', day=day).order_by('-importance').first()
-
-        if news_pulled:
-            sync_index = -1
-            syncs = news_pulled.synchronization
-            coverage = news_pulled.coverage
-            for sync_i in range(len(syncs)):
-                if syncs[sync_i] == day:
-                    if coverage.delivery[sync_i] == "":
-                        delivery = 0
-                    else:
-                        delivery = int(coverage.delivery[sync_i])
-                    if delivery < 10:
-                        sync_index = sync_i
-                        break
-
-            # try:
-            #     sync_index = news_pulled.coverage.schedule.index("%d:00"%country_hour)
-            # except:
-            #     sync_index = -1
-            if sync_index != -1:
-                # if coverage.delivery[int(sync_index)] == "":
-                #     delivery = 0
-                # else:
-                #     delivery = int(coverage.delivery[int(sync_index)])
-                # if  delivery < 10:
-                news_pulled.satus = 'pushing'
-                news_pulled.save()
-                coverage.delivery[int(sync_index)] = str(delivery + 1)
-                coverage.save()
-                news_pushing = news_pulled.info()
-                return service_response(200, 'News to send', news_pulled.info())
-                # else:
-                #     return service_response(204, 'No news to send', "The sent news went over the number limit permitted to be sent.")
-            else:
-                return service_response(204, 'No news to send', "The sent news went over the hour limit permitted to sent.")
+        _country = get_country(country)
+        if _country is None:
+            return service_response(204, 'Unknown country', 'We could not find this country.')
         else:
-            return service_response(204, 'No news to send', "no news at this point.")
+            lat = _country["lat"]
+            lng = _country["lng"]
+            if lat == "":
+                lat = 0.00
+                lng = 0.00
+            tz = tzwhere.tzwhere()
+            timeZoneStr = tz.tzNameAt(lat, lng)
+            timeZoneObj = timezone(timeZoneStr)
+            now_time = datetime.datetime.now(timeZoneObj)
+            day = str(now_time).split(" ")[0]
+            if "-" in str(now_time).split(" ")[1]:
+                country_time = str(now_time).split(" ")[1].split("-")[0]
+            if "+" in str(now_time).split(" ")[1]:
+                country_time = str(now_time).split(" ")[1].split("+")[0]
+            country_hour = int(country_time.split(":")[0])
+
+            news_pulled = News.objects(country=country, status='pulled', day=day).order_by('-importance').first()
+
+            if news_pulled:
+                sync_index = -1
+                syncs = news_pulled.synchronization
+                coverage = news_pulled.coverage
+                for sync_i in range(len(syncs)):
+                    if syncs[sync_i] == day:
+                        if coverage.delivery[sync_i] == "":
+                            delivery = 0
+                        else:
+                            delivery = int(coverage.delivery[sync_i])
+                        if delivery < 10:
+                            sync_index = sync_i
+                            break
+
+                # try:
+                #     sync_index = news_pulled.coverage.schedule.index("%d:00"%country_hour)
+                # except:
+                #     sync_index = -1
+                if sync_index != -1:
+                    # if coverage.delivery[int(sync_index)] == "":
+                    #     delivery = 0
+                    # else:
+                    #     delivery = int(coverage.delivery[int(sync_index)])
+                    # if  delivery < 10:
+                    news_pulled.satus = 'pushing'
+                    news_pulled.save()
+                    coverage.delivery[int(sync_index)] = str(delivery + 1)
+                    coverage.save()
+                    news_pushing = news_pulled.info()
+                    return service_response(200, 'News to send', news_pulled.info())
+                    # else:
+                    #     return service_response(204, 'No news to send', "The sent news went over the number limit permitted to be sent.")
+                else:
+                    return service_response(204, 'No news to send', "The sent news went over the hour limit permitted to sent.")
+            else:
+                return service_response(204, 'No news to send', "no news at this point.")
     else:
         return service_response(405, 'Method not allowed', 'This endpoint supports only a GET method.')
 
@@ -212,33 +217,38 @@ def news_by_country(country, schedule):
 def news_today_country(country, schedule):
     if fk.request.method == 'GET':
         # day = str(datetime.date.today().isoformat())
-        pn = phonenumbers.parse(get_one_number(country), None)
-        _country_object = pycountry.countries.get(alpha_2=region_code_for_number(pn))
-        g = geocoders.GoogleV3()
-        tz = tzwhere.tzwhere()
-        place, (lat, lng) = g.geocode(_country_object.name, timeout=10)
-        timeZoneStr = tz.tzNameAt(lat, lng)
-        timeZoneObj = timezone(timeZoneStr)
-        now_time = datetime.datetime.now(timeZoneObj)
-        day = str(now_time).split(" ")[0]
-        if country == 'all':
-            if schedule == 'all':
-                news = [n.info() for n in News.objects(day=day)]
-            else:
-                news = [n.info() for n in News.objects(day=day, schedule=schedule)]
-                for n in News.objects(day=day, status=schedule):
-                    news.append(n.info())
+        _country = get_country(country)
+        if _country is None:
+            return service_response(204, 'Unknown country', 'We could not find this country.')
         else:
-            news = []
-            if schedule == 'all':
-                for n in News.objects(country=country, day=day):
-                    news.append(n.info())
+            lat = _country["lat"]
+            lng = _country["lng"]
+            if lat == "":
+                lat = 0.00
+                lng = 0.00
+            tz = tzwhere.tzwhere()
+            timeZoneStr = tz.tzNameAt(lat, lng)
+            timeZoneObj = timezone(timeZoneStr)
+            now_time = datetime.datetime.now(timeZoneObj)
+            day = str(now_time).split(" ")[0]
+            if country == 'all':
+                if schedule == 'all':
+                    news = [n.info() for n in News.objects(day=day)]
+                else:
+                    news = [n.info() for n in News.objects(day=day, schedule=schedule)]
+                    for n in News.objects(day=day, status=schedule):
+                        news.append(n.info())
             else:
-                for n in News.objects(country=country, day=day, schedule=schedule):
-                    news.append(n.info())
-                for n in News.objects(country=country, day=day, status=schedule):
-                    news.append(n.info())
-        return service_response(200, 'Country {0} News with Schedule {1}'.format(country, schedule), {'size':len(news), 'news':news})
+                news = []
+                if schedule == 'all':
+                    for n in News.objects(country=country, day=day):
+                        news.append(n.info())
+                else:
+                    for n in News.objects(country=country, day=day, schedule=schedule):
+                        news.append(n.info())
+                    for n in News.objects(country=country, day=day, status=schedule):
+                        news.append(n.info())
+            return service_response(200, 'Country {0} News with Schedule {1}'.format(country, schedule), {'size':len(news), 'news':news})
     else:
         return service_response(405, 'Method not allowed', 'This endpoint supports only a GET method.')
 
