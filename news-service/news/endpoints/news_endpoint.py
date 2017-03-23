@@ -129,25 +129,37 @@ def news_pushing_country(country):
         news_pulled = News.objects(country=country, status='pulled', day=day).order_by('-importance').first()
 
         if news_pulled:
-            try:
-                sync_index = news_pulled.coverage.schedule.index("%d:00"%country_hour)
-            except:
-                sync_index = -1
+            sync_index = -1
+            syncs = news_pulled.synchronization
+            coverage = news_pulled.coverage
+            for sync_i in range(len(syncs)):
+                if syncs[sync_i] == day:
+                    if coverage.delivery[sync_i] == "":
+                        delivery = 0
+                    else:
+                        delivery = int(coverage.delivery[sync_i])
+                    if delivery < 10:
+                        sync_index = sync_i
+                        break
+
+            # try:
+            #     sync_index = news_pulled.coverage.schedule.index("%d:00"%country_hour)
+            # except:
+            #     sync_index = -1
             if sync_index != -1:
-                coverage = news_pulled.coverage
-                if coverage.delivery[int(sync_index)] == "":
-                    delivery = 0
-                else:
-                    delivery = int(coverage.delivery[int(sync_index)])
-                if  delivery <= 10:
-                    news_pulled.satus = 'pushing'
-                    news_pulled.save()
-                    coverage.delivery[int(sync_index)] = str(delivery + 1)
-                    coverage.save()
-                    news_pushing = news_pulled.info()
-                    return service_response(200, 'News to send', news_pulled.info())
-                else:
-                    return service_response(204, 'No news to send', "The sent news went over the number limit permitted to be sent.")
+                # if coverage.delivery[int(sync_index)] == "":
+                #     delivery = 0
+                # else:
+                #     delivery = int(coverage.delivery[int(sync_index)])
+                # if  delivery < 10:
+                news_pulled.satus = 'pushing'
+                news_pulled.save()
+                coverage.delivery[int(sync_index)] = str(delivery + 1)
+                coverage.save()
+                news_pushing = news_pulled.info()
+                return service_response(200, 'News to send', news_pulled.info())
+                # else:
+                #     return service_response(204, 'No news to send', "The sent news went over the number limit permitted to be sent.")
             else:
                 return service_response(204, 'No news to send', "The sent news went over the hour limit permitted to sent.")
         else:
