@@ -17,6 +17,7 @@ class CoreCawler():
         self.match['http://www.bfmtv.com/rss/info/flux-rss/flux-toutes-les-actualites/'] = fetchBFM_FRANCE
         self.match['http://info.arte.tv/fr'] = fetchArte_FRANCE
         self.match['http://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml'] = fetchNYCTimes_USA
+        self.match['http://www.anp.ne/'] = fetchANP
         # self.match['http://www.france24.com/fr/timeline/rss'] = fetchF24CSS_En
 
 # RSS:

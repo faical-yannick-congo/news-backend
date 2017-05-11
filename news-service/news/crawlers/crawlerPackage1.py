@@ -183,3 +183,21 @@ def fetchF24CSS_En(url):
                 pass
 
     return interests
+
+def fetchANP(url):
+    page = requests.get(url)
+    soup = bs4.BeautifulSoup(page.text, 'html.parser')
+    interests = []
+    Spans = soup.find_all("span")
+    interests = []
+    for span in Spans:
+        try:
+            span['class']
+            select = True
+        except:
+            select = False
+
+        if select and "field-content" in span['class']:
+            if span.a.string != "":
+                interests.append(shortenNews160(span.a.string))
+    return interests[:-1]
