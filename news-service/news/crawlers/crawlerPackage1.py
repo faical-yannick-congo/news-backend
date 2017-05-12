@@ -198,6 +198,9 @@ def fetchANP(url):
             select = False
 
         if select and "field-content" in span['class']:
-            if span.a.string != "":
-                interests.append(shortenNews160(span.a.string))
+            try:
+                if span.a.string != "":
+                    interests.append(shortenNews160(span.a.string))
+            except:
+                pass
     return interests[:-1]
